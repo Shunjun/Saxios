@@ -1,0 +1,18 @@
+{
+  "compilerOptions": {
+    "baseUrl": "./",
+    "module": "commonjs",
+    "strictNullChecks": true,
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "experimentalDecorators": true,
+    "jsx": "preserve",
+    "noUnusedParameters": true,
+    "noUnusedLocals": true,
+    "noImplicitAny": true,
+    "target": "es5",
+    "lib": ["es5", "es6", "ES2015.Proxy"],
+    "skipLibCheck": true
+  },
+  "exclude": ["node_modules", "lib", "es"]
+}
