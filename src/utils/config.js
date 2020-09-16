@@ -2,6 +2,7 @@ import { assert, isPlainObject } from './utils'
 import methods from '../config/methods'
 import extend from './extend'
 
+// 用传入的参数创建一个config对象
 function createConfig({ config, fnUrl, fnMethod, data }) {
   assert(isPlainObject(config), 'config need be a object')
   let resultConfig = {
@@ -34,7 +35,7 @@ function createConfig({ config, fnUrl, fnMethod, data }) {
 }
 
 /**
- * 处理args
+ * 处理用户传入的参数
  * @param  {...any} args 
  * @returns config
  */

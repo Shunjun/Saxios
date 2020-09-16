@@ -23,6 +23,11 @@ export function isObject(obj) {
   return obj instanceof Object
 }
 
+export function isFunction(fn) {
+  console.log(Object.prototype.toString.call(fn))
+  return fn instanceof Function || Object.prototype.toString.call(fn) === '[Object Function]'
+}
+
 /** 
  * 是普通的Object
  */

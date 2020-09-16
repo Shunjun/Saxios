@@ -57,24 +57,10 @@ export default {
     return Qs.stringify(params, { arrayFormat: 'brackets' })
   },
 
-  // `data` is the data to be sent as the request body
-  // Only applicable for request methods 'PUT', 'POST', 'DELETE , and 'PATCH'
-  // When no `transformRequest` is set, must be of one of the following types:
-  // - string, plain object, ArrayBuffer, ArrayBufferView, URLSearchParams
-  // - Browser only: FormData, File, Blob
-  // - Node only: Stream, Buffer
-  data: {
-    firstName: 'Fred'
-  },
-
-  // syntax alternative to send data into the body
-  // method post
-  // only the value is sent, not the key
-  data: 'Country=Brasil&City=Belo Horizonte',
 
   // `timeout` specifies the number of milliseconds before the request times out.
   // If the request takes longer than `timeout`, the request will be aborted.
-  timeout: 1000, // default is `0` (no timeout)
+  timeout: 0, // default is `0` (no timeout)
 
   // `withCredentials` indicates whether or not cross-site Access-Control requests
   // should be made using credentials

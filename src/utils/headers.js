@@ -34,12 +34,12 @@ function mergeHeaders(method, defaultHeaders, headers) {
   if (headers) {
     extend(true, mergedHeaders, headers)
   }
+
   return mergedHeaders
 }
 
 
 export function processHeaders({ headers, defaultHeaders, method, data }) {
-
   let newHeaders = mergeHeaders(method, defaultHeaders, headers)
 
   normalizeHeaderName(newHeaders, ['Content-Type'])
@@ -51,4 +51,23 @@ export function processHeaders({ headers, defaultHeaders, method, data }) {
   }
 
   return newHeaders
+}
+
+export function parseHeaders(headers) {
+  let parsedHeaders = {}
+  if (!headers) {
+    return parsedHeaders
+  }
+
+  parsedHeaders = headers.split('\/r\/n').map(header => {
+    let [key, ...vals] = header.split(':')
+
+    if (!key) return
+
+    key = key.trim().toLowerCase()
+    let val = vals.join(':').trim()
+    parsedHeaders[key] = val
+  })
+
+  return parsedHeaders
 }
