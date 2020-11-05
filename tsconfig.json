@@ -1,18 +1,39 @@
 {
   "compilerOptions": {
     "baseUrl": "./",
+    "paths": {
+      "@/*": ["src/*"]
+    },
+    "typeRoots": ["node_modules/@types", "./src/types"],
+
+    "strict": true,
+    "target": "ES2019",
     "module": "commonjs",
+    "isolatedModules": true,
+
     "strictNullChecks": true,
+    "noImplicitAny": true,
+
+    "lib": ["es5", "es6", "es2015.proxy", "DOM"],
+
+    /* Additional Checks */
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+
+    /* Module Resolution Options */
     "moduleResolution": "node",
     "esModuleInterop": true,
+    "resolveJsonModule": true,
+
+    /* Experimental Options */
     "experimentalDecorators": true,
-    "jsx": "preserve",
-    "noUnusedParameters": true,
-    "noUnusedLocals": true,
-    "noImplicitAny": true,
-    "target": "es5",
-    "lib": ["es5", "es6", "ES2015.Proxy"],
+    "emitDecoratorMetadata": true,
+
+    /* Advanced Options */
+    "forceConsistentCasingInFileNames": true,
     "skipLibCheck": true
   },
-  "exclude": ["node_modules", "lib", "es"]
+  "exclude": ["node_modules"]
 }
