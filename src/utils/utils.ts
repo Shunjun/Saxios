@@ -11,25 +11,30 @@ export function isArray(obj: any): obj is Array<any> {
   return obj instanceof Array;
 }
 
-export function isWindow(obj: any) {
+export function isWindow(obj: any): obj is Window {
   return obj === globalThis;
 }
 
-export function isDate(obj: any) {
+export function isDate(obj: any): obj is Date {
   return Object.getPrototypeOf(obj) === Date.constructor;
 }
 
-export function isObject(obj: any) {
+export function isObject(obj: any): obj is Object {
   return obj instanceof Object;
 }
 
-export function isFunction(fn: any) {
+export function isFunction(fn: any): fn is Function {
   console.log(Object.prototype.toString.call(fn));
   return fn instanceof Function || Object.prototype.toString.call(fn) === '[Object Function]';
 }
 
-export function isUndefined(obj: any) {
+export function isUndefined(obj: any): obj is undefined {
   return typeof obj === 'undefined';
+}
+
+// 判断是Formdata
+export function isFormData(data: any): data is FormData {
+  return !isUndefined(data) && data instanceof FormData;
 }
 
 /**
@@ -79,4 +84,8 @@ export function merge(...arg: any[]) {
   });
 
   return result;
+}
+
+export function isURLSearchParams(obj: any): obj is URLSearchParams {
+  return obj instanceof URLSearchParams;
 }

@@ -2,7 +2,7 @@ import isAbsoluteURL from '@/helper/isAbsoluteURL';
 import { isUndefined } from '@/utils/utils';
 import combineURLs from './combineURLs';
 
-function buildFullUrl(baseURL: string | undefined, requestedURL: string): string;
+function buildFullUrl(baseURL: string | undefined, requestedURL?: string): string;
 function buildFullUrl(requestedURL: string): string;
 function buildFullUrl(baseURL: string | undefined, requestedURL?: string) {
   if (isUndefined(requestedURL)) {

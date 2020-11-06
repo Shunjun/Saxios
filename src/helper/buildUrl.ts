@@ -1,4 +1,6 @@
-import { isArray, isPlainObject, isDate } from '@/utils/utils';
+import { RequestConfig } from '@/types';
+import { isArray, isPlainObject, isDate, isURLSearchParams } from '@/utils/utils';
+import buildFullUrl from './buildFullUrl';
 
 function encode(val: string) {
   return encodeURIComponent(val)
@@ -23,30 +25,38 @@ function changeValue(key: string, value: any) {
   return `${encode(key)}=${encode(val)}`;
 }
 
-function buildUrl(url: string, params?: Store) {
+function buildUrl(url: string, params?: Store, paramsSerializer?: (p: any) => string) {
   if (!params) {
     return url;
   }
 
-  const parts: string[] = [];
+  let serializedParams: string;
 
-  Object.keys(params).forEach((key) => {
-    const value = params[key];
-    if (value === null || typeof value === 'undefined') {
-      return;
-    }
+  if (paramsSerializer) {
+    serializedParams = paramsSerializer(params);
+  } else if (isURLSearchParams(params)) {
+    serializedParams = params.toString();
+  } else {
+    const parts: string[] = [];
 
-    if (isArray(value)) {
-      value.forEach((val: any) => {
-        const arrValKey = `${key}[]`;
-        parts.push(changeValue(arrValKey, val));
-      });
-    } else {
-      parts.push(changeValue(key, value));
-    }
-  });
+    Object.keys(params).forEach((key) => {
+      const value = params[key];
+      if (value === null || typeof value === 'undefined') {
+        return;
+      }
 
-  const serializedParams = parts.join('&');
+      if (isArray(value)) {
+        value.forEach((val: any) => {
+          const arrValKey = `${key}[]`;
+          parts.push(changeValue(arrValKey, val));
+        });
+      } else {
+        parts.push(changeValue(key, value));
+      }
+    });
+
+    serializedParams = parts.join('&');
+  }
 
   if (serializedParams) {
     [url] = url.split('#');
@@ -54,6 +64,11 @@ function buildUrl(url: string, params?: Store) {
   }
 
   return url;
+}
+
+export function transformURL(config: RequestConfig) {
+  const { baseURL, url, params, paramsSerializer } = config;
+  return buildUrl(buildFullUrl(baseURL, url), params, paramsSerializer);
 }
 
 export default buildUrl;

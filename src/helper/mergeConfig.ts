@@ -10,11 +10,11 @@ type RequestConfigItem = RequestConfig[keyof RequestConfig];
  */
 export default function mergeConfig(
   config1: Partial<RequestConfig>,
-  config2: RequestConfig,
+  config2?: RequestConfig,
 ): RequestConfig {
-  // if (!config2) {
-  //   config2 = {};
-  // }
+  if (!config2) {
+    config2 = {};
+  }
 
   const config = Object.create(null);
 
@@ -45,9 +45,9 @@ export default function mergeConfig(
     'responseEncoding',
   ];
   // 只接受自定义配置的字段
-  const valueFromConfig2Keys = ['url', 'params', 'data'];
+  const valueFromConfig2Keys = ['url', 'method', 'data'];
   // 需要深度合并的字段
-  const DeepMergeKeys = ['headers'];
+  const DeepMergeKeys = ['headers', 'params', 'auth'];
 
   function getMergedValue(target: RequestConfigItem, source: RequestConfigItem) {
     if (isPlainObject(target) && isPlainObject(source)) {
@@ -85,6 +85,16 @@ export default function mergeConfig(
       config[key] = getMergedValue(undefined, config1[key]);
     }
   });
+
+  const SaxiosKeys = defaultToConfig2Keys.concat(valueFromConfig2Keys).concat(DeepMergeKeys);
+
+  const otherKeys = Object.keys(config1)
+    .concat(Object.keys(config2))
+    .filter((key) => {
+      return SaxiosKeys.indexOf(key) === -1;
+    });
+
+  forEach(otherKeys, (key) => deepMerge(key));
 
   return config;
 }

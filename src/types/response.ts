@@ -1,9 +1,11 @@
+import { RequestConfig } from '@/types';
+
 export interface SaxiosResponse<T = any> {
   data: T;
   status: number;
   statusText: string;
   headers: any;
-  config: AxiosRequestConfig;
+  config: RequestConfig;
   request: any;
 }
 

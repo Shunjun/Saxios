@@ -1,6 +1,5 @@
 export interface SaxiosInterceptorManager<T> {
   use(resolved: ResolvedFn<T>, rejected?: RejectedFn): number;
-
   eject(id: number): void;
 }
 

@@ -3,3 +3,4 @@ export * from './response';
 export * from './error';
 export * from './saxios';
 export * from './interceptor';
+export * from './cancel';

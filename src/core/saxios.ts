@@ -1,43 +1,57 @@
 import { standardizeConfig, reloadGetParams, reloadPostParams } from '@/helper/config';
 import { merge } from '@/utils/utils';
+import mixin from '@/utils/mixin';
 import defaultconfig from '@/config/defaultConfig';
 import {
-  createFn,
-  SaxiosInstance,
+  SaxiosStatic,
   RequestConfig,
   SaxiosPromise,
   SaxiosResponse,
   ResolvedFn,
   RejectedFn,
 } from '@/types';
+import CancelToken from '@/cancel/cancelToken';
+import Cancel, { isCancel } from '@/cancel/Cancel';
+import mergeConfig from '@/helper/mergeConfig';
+import { transformURL } from '@/helper/buildUrl';
 import cerateRequestConfig from './request';
 import InterceptorManager from './interceptors';
 import dispatchRequest from './dispatchRequest';
-
-interface Interceptors {
-  request: InterceptorManager<RequestConfig>;
-  response: InterceptorManager<SaxiosResponse>;
-}
 
 interface PromiseChain {
   resolved: ResolvedFn | ((config: RequestConfig) => SaxiosPromise);
   rejected?: RejectedFn;
 }
 
-const create: createFn = function (config) {
+function create(config: Partial<RequestConfig>): SaxiosStatic {
   const meargeconfig = merge(defaultconfig, config);
 
-  return new Saxios(meargeconfig) as SaxiosInstance;
-};
+  let saxios = new Saxios(meargeconfig);
+
+  saxios = mixin(saxios, {
+    Cancel,
+    isCancel,
+    CancelToken,
+    all: function all<T>(promises: Array<T | Promise<T>>): Promise<T[]> {
+      return Promise.all(promises);
+    },
+    spread: function spread<T, R>(callback: (...args: T[]) => R): (arr: T[]) => R {
+      return function wrap(arr) {
+        return callback(...arr);
+      };
+    },
+  });
+
+  return (saxios as unknown) as SaxiosStatic;
+}
 
 export class Saxios {
   default: Partial<RequestConfig>;
 
-  private interceptors: Interceptors;
-
-  static create = create;
-
-  public create = create;
+  interceptors: {
+    request: InterceptorManager<RequestConfig>;
+    response: InterceptorManager<SaxiosResponse>;
+  };
 
   constructor(initConfig: Partial<RequestConfig>) {
     const _this = this;
@@ -63,7 +77,7 @@ export class Saxios {
         config = reloadGetParams(url, config);
         return _this._request(config);
       },
-    }) as unknown) as SaxiosInstance;
+    }) as unknown) as this;
   }
 
   request(config: RequestConfig) {
@@ -82,6 +96,20 @@ export class Saxios {
   delete(url: Url, config?: RequestConfig): SaxiosPromise;
   delete(url: Url | RequestConfig, config?: RequestConfig): SaxiosPromise {
     config = reloadGetParams(url, config, 'delete');
+    return this._request(config);
+  }
+
+  head(config: RequestConfig): SaxiosPromise;
+  head(url: Url, config?: RequestConfig): SaxiosPromise;
+  head(url: Url | RequestConfig, config?: RequestConfig): SaxiosPromise {
+    config = reloadGetParams(url, config, 'head');
+    return this._request(config);
+  }
+
+  options(config: RequestConfig): SaxiosPromise;
+  options(url: Url, config?: RequestConfig): SaxiosPromise;
+  options(url: Url | RequestConfig, config?: RequestConfig): SaxiosPromise {
+    config = reloadGetParams(url, config, 'options');
     return this._request(config);
   }
 
@@ -106,9 +134,13 @@ export class Saxios {
     return this._request(config);
   }
 
+  getUri(config?: RequestConfig): string {
+    config = mergeConfig(this.default, config);
+    return transformURL(config);
+  }
+
   _request<T>(standardConfig: RequestConfig): SaxiosPromise<T> {
     const config = cerateRequestConfig(this.default, standardConfig);
-
     // 创建拦截器调用链 请求函数在最中间
     const chain: PromiseChain[] = [{ resolved: dispatchRequest, rejected: undefined }];
 
@@ -129,6 +161,10 @@ export class Saxios {
 
     return (promise as unknown) as SaxiosPromise<T>;
   }
+
+  create = create;
+
+  static create = create;
 }
 
 const saxios = Saxios.create({});

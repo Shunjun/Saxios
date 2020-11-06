@@ -1,5 +1,5 @@
-import axios from '../../src/core/saxios';
-// import axios from 'axios';
+// import axios from '../../src/core/saxios';
+import axios from 'axios';
 
 // axios.interceptors.request.use((value) => {
 //   console.log(value);
