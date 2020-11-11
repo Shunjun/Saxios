@@ -5,6 +5,7 @@ function normalizeHeaderName(headers: any, normalizedNames: string[]): void {
   if (!headers) {
     return;
   }
+
   normalizedNames.forEach((name) => {
     Object.keys(headers).forEach((key) => {
       if (name.toUpperCase() === key.toUpperCase() && name !== key) {
@@ -17,9 +18,9 @@ function normalizeHeaderName(headers: any, normalizedNames: string[]): void {
 
 // 合并请求头
 function mergeHeaders(headers: any, method: Method) {
-  const mergedHeaders: any = merge(headers.common || {}, headers.common[method], headers.common);
+  const mergedHeaders: any = merge(headers.common || {}, headers[method], headers);
 
-  forEach(['delete', 'get', 'head', 'post', 'put', 'patch', 'common'], (key) => {
+  forEach(['delete', 'get', 'head', 'post', 'put', 'patch', 'common', 'options'], (key) => {
     delete mergedHeaders[key];
   });
 
@@ -27,7 +28,13 @@ function mergeHeaders(headers: any, method: Method) {
 }
 
 function processHeaders(headers: any, method: Method, data: any) {
-  const newHeaders = mergeHeaders(headers, method);
+  let newHeaders: Store = {};
+
+  if (!headers) {
+    return newHeaders;
+  }
+
+  newHeaders = mergeHeaders(headers, method);
 
   normalizeHeaderName(newHeaders, ['Content-Type']);
 

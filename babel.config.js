@@ -6,6 +6,7 @@ const envPreset = [
     // 指定 corjs 版本
     corejs: 3,
     // 禁用模块化方案转换
+
     modules: false,
   },
 ];

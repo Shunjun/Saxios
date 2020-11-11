@@ -43,6 +43,7 @@ export default function mergeConfig(
     'cancelToken',
     'socketPath',
     'responseEncoding',
+    'validateStatus',
   ];
   // 只接受自定义配置的字段
   const valueFromConfig2Keys = ['url', 'method', 'data'];

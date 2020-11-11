@@ -1,5 +1,5 @@
 import { RequestConfig, SaxiosPromise } from '@/types';
-import { transformRequestData } from '@/core/transform';
+import { transformRequestData, transformResponseData } from '@/core/transform';
 import processHeaders from '@/helper/headers';
 import request from '@/adapters/xhr';
 
@@ -11,7 +11,16 @@ export default function dispatchRequest(config: RequestConfig): SaxiosPromise {
   config.headers = processHeaders(config.headers, config.method!, config.data);
   config.data = transformRequestData(config);
 
-  return request(config);
+  return request(config)
+    .then((res) => {
+      return transformResponseData(res);
+    })
+    .catch((err) => {
+      if (err && err.response) {
+        err.response = transformResponseData(err.response);
+      }
+      return Promise.reject(err);
+    });
 }
 
 function throwIfCancellationRequseted(config: RequestConfig): void {

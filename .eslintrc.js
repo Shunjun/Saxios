@@ -1,4 +1,5 @@
 const OFF = 0;
+const WARNING = 1
 const ERROR = 2;
 
 module.exports = {
@@ -36,7 +37,7 @@ module.exports = {
     'func-names': OFF,
     'lines-between-class-members': OFF,
     'max-classes-per-file': OFF,
-    'no-console': OFF,
+    'no-console': WARNING,
     'no-empty': OFF,
     'no-param-reassign': OFF,
     'no-plusplus': OFF,

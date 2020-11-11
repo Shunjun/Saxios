@@ -16,7 +16,7 @@ export function isWindow(obj: any): obj is Window {
 }
 
 export function isDate(obj: any): obj is Date {
-  return Object.getPrototypeOf(obj) === Date.constructor;
+  return Object.getPrototypeOf(obj) === Date.prototype;
 }
 
 export function isObject(obj: any): obj is Object {

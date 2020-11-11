@@ -1,4 +1,3 @@
-// import { Saxios } from '@/core/saxios';
 import {
   RequestConfig,
   SaxiosPromise,
@@ -41,7 +40,7 @@ export interface Saxios {
 
 export interface SaxiosInstance extends Saxios {
   <T = any>(config: RequestConfig): SaxiosPromise<T>;
-  <T = any>(url: Url, config: RequestConfig): SaxiosPromise<T>;
+  <T = any>(url: Url, config?: RequestConfig): SaxiosPromise<T>;
 }
 
 export interface SaxiosStatic extends SaxiosInstance {

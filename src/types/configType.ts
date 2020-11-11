@@ -35,6 +35,11 @@ export interface RequestConfig {
   // proxy?: AxiosProxyConfig | false;
   cancelToken?: CancelToken;
   // decompress?: boolean;
+  useCache?: boolean;
+  validateCache?: (url: Url, configs: RequestConfig) => boolean;
+  ttl?: number;
+  // 最大缓存数
+  maxCache?: number;
 }
 
 export type PartialRequestConfig = Partial<RequestConfig>;

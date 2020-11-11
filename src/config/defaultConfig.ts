@@ -22,6 +22,8 @@ const defaultConfig: Partial<RequestConfig> = {
   validateStatus(status: number): boolean {
     return status >= 200 && status < 300;
   },
+
+  ttl: 60000,
 };
 
 const methodsWithData = ['post', 'put', 'patch'];

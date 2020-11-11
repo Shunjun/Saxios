@@ -61,16 +61,6 @@ export function request<T>(config: RequestConfig): SaxiosPromise<T> {
       onDownloadProgress && (xhr.onprogress = onDownloadProgress);
       onUploadProgress && (xhr.upload.onprogress = onUploadProgress);
 
-      xhr.onreadystatechange = function () {
-        if (xhr.readyState !== 4) {
-          return;
-        }
-
-        const response = createResponse(xhr, config);
-
-        handleResponse(response);
-      };
-
       xhr.onerror = function () {
         const error = createError({
           message: 'Network Error',
@@ -89,6 +79,20 @@ export function request<T>(config: RequestConfig): SaxiosPromise<T> {
           request: xhr,
         });
         reject(error);
+      };
+
+      xhr.onreadystatechange = function () {
+        if (!xhr || xhr.readyState !== 4) {
+          return;
+        }
+
+        if (xhr.status === 0 && !(xhr.responseURL && xhr.responseURL.indexOf('file:') === 0)) {
+          return;
+        }
+
+        const response = createResponse(xhr, config);
+
+        handleResponse(response);
       };
     }
 

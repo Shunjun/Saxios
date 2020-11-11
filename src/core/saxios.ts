@@ -14,9 +14,12 @@ import CancelToken from '@/cancel/cancelToken';
 import Cancel, { isCancel } from '@/cancel/Cancel';
 import mergeConfig from '@/helper/mergeConfig';
 import { transformURL } from '@/helper/buildUrl';
+import CatcheMap from '@/helper/cacheMap';
+import { checkCachebefoRquest, shouldCatcheafterRequest } from './cache';
 import cerateRequestConfig from './request';
 import InterceptorManager from './interceptors';
 import dispatchRequest from './dispatchRequest';
+import createResponse from './response';
 
 interface PromiseChain {
   resolved: ResolvedFn | ((config: RequestConfig) => SaxiosPromise);
@@ -53,9 +56,12 @@ export class Saxios {
     response: InterceptorManager<SaxiosResponse>;
   };
 
+  cacheMap: CatcheMap;
+
   constructor(initConfig: Partial<RequestConfig>) {
     const _this = this;
     this.default = initConfig;
+    this.cacheMap = new CatcheMap(initConfig);
     this.interceptors = {
       request: new InterceptorManager<RequestConfig>(),
       response: new InterceptorManager<SaxiosResponse>(),
@@ -141,23 +147,34 @@ export class Saxios {
 
   _request<T>(standardConfig: RequestConfig): SaxiosPromise<T> {
     const config = cerateRequestConfig(this.default, standardConfig);
+
+    // 判断缓存,如果存在则使用缓存
+    const catche = checkCachebefoRquest(this.cacheMap, config);
+    if (catche) {
+      const response = createResponse(catche, config);
+      return Promise.resolve(response);
+    }
+
     // 创建拦截器调用链 请求函数在最中间
     const chain: PromiseChain[] = [{ resolved: dispatchRequest, rejected: undefined }];
-
     this.interceptors.request.forEach((interceptor) => {
       chain.unshift(interceptor);
     });
-
     this.interceptors.response.forEach((interceptor) => {
       chain.push(interceptor);
     });
-
     let promise = Promise.resolve(config);
-
     while (chain.length) {
       const { resolved, rejected } = chain.shift()!;
       promise = promise.then(resolved, rejected);
     }
+
+    // 缓存数据
+    ((promise as unknown) as SaxiosPromise<T>).then((response) => {
+      if (response.config.useCache) {
+        shouldCatcheafterRequest(this.cacheMap, response);
+      }
+    });
 
     return (promise as unknown) as SaxiosPromise<T>;
   }
